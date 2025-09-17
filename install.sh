@@ -30,13 +30,11 @@ if read -q '?Install dotfile symlinks? (y/n) '; then
         ln -fs ~/sync/dot ~
     fi
 
-    link ~/dot/vim/vimrc        ~/.vimrc
-    # link ~/dot/zsh/zshrc        ~/.zshrc
-    link ~/dot/tmux/tmux.conf   ~/.tmux.conf
-    link ~/dot/kitty/kitty.conf ~/.config/kitty/kitty.conf
-    # link ~/dot/helix            ~/.config/helix
-    link ~/dot/nvim             ~/.config/nvim
-    link ~/dot/fish/config.fish ~/.config/fish/config.fish
+    link ~/dot/vimrc        		        ~/.vimrc
+    link ~/dot/tmux.conf   		          ~/.tmux.conf
+    link ~/dot/config/kitty/kitty.conf 	~/.config/kitty/kitty.conf
+    link ~/dot/config/nvim             	~/.config/nvim
+    link ~/dot/config/fish/config.fish 	~/.config/fish/config.fish
 else
     echo
 fi
