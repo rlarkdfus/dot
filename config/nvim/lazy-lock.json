@@ -1,0 +1,11 @@
+{
+  "coc-fzf": { "branch": "master", "commit": "6f19832e9e80ceacb98faac2688364b4f7a5b8e4" },
+  "coc.nvim": { "branch": "master", "commit": "29774cf47307a39a0d5c667068c377cef2253eea" },
+  "fzf": { "branch": "master", "commit": "ead302981cc9d9219e58c1517921e9f2d68a6b6e" },
+  "fzf.vim": { "branch": "master", "commit": "3725f364ccd25b85a91970720ba9bc2931861910" },
+  "gruvbox": { "branch": "master", "commit": "697c00291db857ca0af00ec154e5bd514a79191f" },
+  "lazy.nvim": { "branch": "main", "commit": "6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a" },
+  "vim-better-whitespace": { "branch": "master", "commit": "de99b55a6fe8c96a69f9376f16b1d5d627a56e81" },
+  "vim-commentary": { "branch": "master", "commit": "64a654ef4a20db1727938338310209b6a63f60c9" },
+  "vim-fugitive": { "branch": "master", "commit": "61b51c09b7c9ce04e821f6cf76ea4f6f903e3cf4" }
+}
