@@ -35,3 +35,6 @@ glide.autocmds.create("UrlEnter", /https:\/\/www\.overleaf\.com/, async (e) => {
   await glide.excmds.execute("mode_change ignore");
   return async () => await glide.excmds.execute("mode_change normal");
 });
+
+glide.keymaps.set("ignore", "<C-j>", "tab_next");
+glide.keymaps.set("ignore", "<C-k>", "tab_prev");
