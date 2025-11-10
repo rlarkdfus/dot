@@ -43,3 +43,10 @@ glide.autocmds.create("UrlEnter", /https:\/\/docs\.google\.com/, async (e) => {
 
 glide.keymaps.set("ignore", "<C-j>", "tab_next");
 glide.keymaps.set("ignore", "<C-k>", "tab_prev");
+
+glide.keymaps.set("normal", "h", "keys <left>");
+glide.keymaps.set("normal", "l", "keys <right>");
+glide.keymaps.set("normal", "j", "keys <down>");
+glide.keymaps.set("normal", "k", "keys <up>");
+glide.keymaps.set(["insert", "normal"], "<C-d>", "keys <pagedown>");
+glide.keymaps.set(["normal", "insert"], "<C-u>", "keys <pageup>");
