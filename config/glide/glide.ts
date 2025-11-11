@@ -50,3 +50,4 @@ glide.keymaps.set("normal", "j", "keys <down>");
 glide.keymaps.set("normal", "k", "keys <up>");
 glide.keymaps.set(["insert", "normal"], "<C-d>", "keys <pagedown>");
 glide.keymaps.set(["normal", "insert"], "<C-u>", "keys <pageup>");
+glide.keymaps.set("normal", "<C-,>", "blur");
