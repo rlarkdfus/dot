@@ -51,3 +51,23 @@ glide.keymaps.set("normal", "k", "keys <up>");
 glide.keymaps.set(["insert", "normal"], "<C-d>", "keys <pagedown>");
 glide.keymaps.set(["normal", "insert"], "<C-u>", "keys <pageup>");
 glide.keymaps.set("normal", "<C-,>", "blur");
+
+glide.keymaps.set(["insert", "normal"], "<C-j>", async () => {
+  if (urlbar_is_focused()) {
+    await glide.keys.send("<tab>");
+  } else {
+    await glide.excmds.execute("tab_next");
+  }
+});
+
+glide.keymaps.set(["insert", "normal"], "<C-k>", async () => {
+  if (urlbar_is_focused()) {
+    await glide.keys.send("<S-tab>");
+  } else {
+    await glide.excmds.execute("tab_prev");
+  }
+});
+
+function urlbar_is_focused() {
+  return document!.getElementById("urlbar-input")!.getAttribute("aria-expanded") === "true";
+}
