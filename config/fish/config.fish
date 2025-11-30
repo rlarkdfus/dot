@@ -30,4 +30,3 @@ alias vim=nvim
 
 set --universal pure_show_system_time true
 set --universal pure_color_system_time yellow
-

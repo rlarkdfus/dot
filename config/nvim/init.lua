@@ -59,8 +59,12 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+local function format()
+    vim.fn.CocAction('format')
+end
+
 -- Keymaps
-vim.keymap.set("n", "<leader>f", ":Files<CR>")
+vim.keymap.set("n", "<leader>f", ":GFiles<CR>")
 vim.keymap.set("n", "<leader>/", ":Rg<CR>")
 vim.keymap.set("n", "<leader>?", ":BLines<CR>")
 
@@ -70,7 +74,7 @@ vim.keymap.set("v", "<C-c>", '"+y')
 vim.keymap.set("n", "<C-v>", '"+p')
 
 vim.keymap.set("n", "<F5>", ":wall!<CR>:!sbcl --load foo.cl<CR><CR>")
-vim.keymap.set("n", "<leader><leader>", ":call Format()<CR>")
+vim.keymap.set('n', '<leader><leader>', format, { silent = true })
 vim.keymap.set("n", "<leader>cl", "<Plug>(coc-codelens-action)", { silent = true })
 vim.keymap.set("x", "<leader>a", "<Plug>(coc-codeaction-selected)", { silent = true })
 vim.keymap.set("n", "<leader>a", "<Plug>(coc-codeaction-selected)", { silent = true })
@@ -88,6 +92,7 @@ vim.keymap.set("n", "<Tab>", "bb<c-^><cr>")
 vim.opt.signcolumn = "yes"
 
 vim.keymap.set("n", "<leader>w", ":ToggleWhitespace<CR>", { silent = true })
+
 
 -- Function for documentation
 function ShowDocumentation()

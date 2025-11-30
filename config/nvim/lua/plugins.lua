@@ -20,5 +20,11 @@ require("lazy").setup({
   },
   { "antoinemadec/coc-fzf" },
   { "ntpeters/vim-better-whitespace" },
-  { "tpope/vim-surround" },
+  { "othree/html5.vim" },
+  { "pangloss/vim-javascript" },
+  {
+    "evanleck/vim-svelte",
+    branch="main"
+  },
+  {"prisma/vim-prisma"}
 })
