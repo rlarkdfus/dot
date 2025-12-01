@@ -15,16 +15,8 @@
 //   https://github.com/glide-browser/glide/blob/main/src/glide/browser/base/content/plugins/keymaps.mts
 //
 // Try typing `glide.` and see what you can do!
-glide.keymaps.set(
-  "command",
-  "<c-j>",
-  "commandline_focus_next",
-);
-glide.keymaps.set(
-  "command",
-  "<c-k>",
-  "commandline_focus_back",
-);
+glide.keymaps.set("command", "<c-j>", "commandline_focus_next");
+glide.keymaps.set("command", "<c-k>", "commandline_focus_back");
 
 glide.autocmds.create("UrlEnter", /https:\/\/mail\.google\.com/, async (e) => {
   await glide.excmds.execute("mode_change ignore");
@@ -63,5 +55,35 @@ glide.keymaps.set(["insert", "normal"], "<C-k>", async () => {
 });
 
 function urlbar_is_focused() {
-  return document!.getElementById("urlbar-input")!.getAttribute("aria-expanded") === "true";
+  return (
+    document!.getElementById("urlbar-input")!.getAttribute("aria-expanded") ===
+    "true"
+  );
+}
+
+glide.keymaps.set("normal", "<leader>c", async () => {
+  open_tab("claude.ai");
+});
+
+glide.keymaps.set("normal", "<leader>y", async () => {
+  open_tab("youtube.com");
+});
+
+glide.keymaps.set("normal", "<leader>g", async () => {
+  open_tab("github.com");
+});
+
+async function open_tab(domain: string) {
+  const url = "https:\/\/" + domain;
+  const tab = await glide.tabs.get_first({ url: url + "/*" });
+  if (tab) {
+    await browser.tabs.update(tab.id, {
+      active: true,
+    });
+  } else {
+    await browser.tabs.create({
+      active: true,
+      url: url,
+    });
+  }
 }
