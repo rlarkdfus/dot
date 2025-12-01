@@ -15,28 +15,25 @@
 //   https://github.com/glide-browser/glide/blob/main/src/glide/browser/base/content/plugins/keymaps.mts
 //
 // Try typing `glide.` and see what you can do!
-glide.keymaps.set("command", "<c-j>", "commandline_focus_next");
-glide.keymaps.set("command", "<c-k>", "commandline_focus_back");
 
-glide.autocmds.create("UrlEnter", /https:\/\/mail\.google\.com/, async (e) => {
-  await glide.excmds.execute("mode_change ignore");
-  return async () => await glide.excmds.execute("mode_change normal");
-});
+const domain_keys = {
+  "<leader>c": "claude.ai",
+  "<leader>y": "youtube.com",
+  "<leader>g": "github.com",
+  "<leader>e" : "edstem.org",
+};
 
-glide.autocmds.create("UrlEnter", /https:\/\/www\.overleaf\.com/, async (e) => {
-  await glide.excmds.execute("mode_change ignore");
-  return async () => await glide.excmds.execute("mode_change normal");
-});
+const ignore_mode_domains = [
+  "mail.google.com",
+  "overleaf.com",
+  "docs.google.com",
+];
 
-glide.autocmds.create("UrlEnter", /https:\/\/docs\.google\.com/, async (e) => {
-  await glide.excmds.execute("mode_change ignore");
-  return async () => await glide.excmds.execute("mode_change normal");
-});
+glide.keymaps.set("command", "<C-j>", "commandline_focus_next");
+glide.keymaps.set("command", "<C-k>", "commandline_focus_back");
 
 glide.keymaps.set("ignore", "<C-j>", "tab_next");
 glide.keymaps.set("ignore", "<C-k>", "tab_prev");
-
-glide.keymaps.set("normal", "<C-,>", "blur");
 
 glide.keymaps.set(["insert", "normal"], "<C-j>", async () => {
   if (urlbar_is_focused()) {
@@ -54,24 +51,25 @@ glide.keymaps.set(["insert", "normal"], "<C-k>", async () => {
   }
 });
 
+for (const [key, domain] of Object.entries(domain_keys)) {
+  glide.keymaps.set("normal", key, async () => {
+    open_tab(domain);
+  });
+}
+
+for (const domain of ignore_mode_domains) {
+  glide.autocmds.create("UrlEnter", { hostname: domain }, async () => {
+    await glide.excmds.execute("mode_change ignore");
+    return async () => await glide.excmds.execute("mode_change normal");
+  });
+}
+
 function urlbar_is_focused() {
   return (
     document!.getElementById("urlbar-input")!.getAttribute("aria-expanded") ===
     "true"
   );
 }
-
-glide.keymaps.set("normal", "<leader>c", async () => {
-  open_tab("claude.ai");
-});
-
-glide.keymaps.set("normal", "<leader>y", async () => {
-  open_tab("youtube.com");
-});
-
-glide.keymaps.set("normal", "<leader>g", async () => {
-  open_tab("github.com");
-});
 
 async function open_tab(domain: string) {
   const url = "https:\/\/" + domain;
@@ -87,3 +85,63 @@ async function open_tab(domain: string) {
     });
   }
 }
+
+glide.keymaps.set(["normal", "insert"], "<C-b>h", async ({ tab_id }) => {
+  if (glide.unstable.split_views.has_split_view(tab_id)) {
+    const current_split = glide.unstable.split_views.get(tab_id)?.id;
+    const all_tabs = await glide.tabs.query({});
+    const current_index = all_tabs.findIndex((t) => t.id === tab_id);
+    const other_tab = all_tabs[current_index - 1];
+    if (
+      other_tab &&
+      glide.unstable.split_views.get(other_tab)?.id == current_split
+    ) {
+      await glide.excmds.execute("tab_prev");
+    } else {
+      await glide.excmds.execute("tab_next");
+    }
+  }
+});
+
+glide.keymaps.set(["normal", "insert"], "<C-b>l", async ({ tab_id }) => {
+  if (glide.unstable.split_views.has_split_view(tab_id)) {
+    const current_split = glide.unstable.split_views.get(tab_id)?.id;
+    const all_tabs = await glide.tabs.query({});
+    const current_index = all_tabs.findIndex((t) => t.id === tab_id);
+    const other_tab = all_tabs[current_index + 1];
+    if (
+      other_tab &&
+      glide.unstable.split_views.get(other_tab)?.id == current_split
+    ) {
+      await glide.excmds.execute("tab_next");
+    } else {
+      await glide.excmds.execute("tab_prev");
+    }
+  }
+});
+
+glide.keymaps.set(
+  ["normal", "insert"],
+  "<C-b>%",
+  async ({ tab_id }) => {
+    const other = await browser.tabs.create({})
+    if (!other) {
+      throw new Error("No next tab");
+    }
+    glide.unstable.split_views.create([tab_id, other]);
+  },
+  {
+    description: "Create a split view with the tab to the right",
+  },
+);
+
+glide.keymaps.set(
+  ["normal", "insert"],
+  "<C-b>q",
+  async ({ tab_id }) => {
+    glide.unstable.split_views.separate(tab_id);
+  },
+  {
+    description: "Close the split view for the current tab",
+  },
+);
