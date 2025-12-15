@@ -29,13 +29,9 @@ const ignore_mode_domains = [
   "docs.google.com",
 ];
 
-async function loadAccounts() {
-  const data = await glide.fs.read("accounts.json", "utf8");
-  return JSON.parse(data) as { label: string; username: string; password: string }[];
-}
-
 glide.keymaps.set("command", "<C-j>", "commandline_focus_next");
 glide.keymaps.set("command", "<C-k>", "commandline_focus_back");
+glide.keymaps.set("normal", "q", "clear");
 
 glide.keymaps.set("ignore", "<C-j>", "tab_next");
 glide.keymaps.set("ignore", "<C-k>", "tab_prev");
@@ -167,7 +163,8 @@ glide.keymaps.set(
     glide.commandline.show({
       title: "Split with tab",
       options: other_tabs.map((tab) => ({
-        label: tab.title || tab.url || `Tab ${tab.id}`,
+        label: tab.title,
+        description: tab.url,
         async execute() {
           glide.unstable.split_views.create([tab_id, tab.id]);
         },
@@ -216,3 +213,7 @@ glide.keymaps.set("normal", "<leader>o", async () => {
   });
 }, { description: "Open the bookmarks picker" });
 
+async function loadAccounts() {
+  const data = await glide.fs.read("accounts.json", "utf8");
+  return JSON.parse(data) as { label: string; username: string; password: string }[];
+}
