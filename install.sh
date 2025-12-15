@@ -35,7 +35,7 @@ if read -q '?Install dotfile symlinks? (y/n) '; then
     link ~/dot/config/kitty/kitty.conf 	~/.config/kitty/kitty.conf
     link ~/dot/config/nvim             	~/.config/nvim
     link ~/dot/config/fish/config.fish 	~/.config/fish/config.fish
-    link ~/dot/config/glide/glide.ts    ~/.config/glide/glide.ts
+    link ~/dot/config/glide/            ~/.config/glide
 else
     echo
 fi

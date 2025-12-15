@@ -20,7 +20,7 @@ const domain_keys = {
   "<leader>c": "claude.ai",
   "<leader>y": "youtube.com",
   "<leader>g": "github.com",
-  "<leader>e" : "edstem.org",
+  "<leader>e": "edstem.org",
 };
 
 const ignore_mode_domains = [
@@ -29,11 +29,41 @@ const ignore_mode_domains = [
   "docs.google.com",
 ];
 
+async function loadAccounts() {
+  const data = await glide.fs.read("accounts.json", "utf8");
+  return JSON.parse(data) as { label: string; username: string; password: string }[];
+}
+
 glide.keymaps.set("command", "<C-j>", "commandline_focus_next");
 glide.keymaps.set("command", "<C-k>", "commandline_focus_back");
 
 glide.keymaps.set("ignore", "<C-j>", "tab_next");
 glide.keymaps.set("ignore", "<C-k>", "tab_prev");
+glide.keymaps.set("normal", "<leader>f", "commandline_show tab ");
+
+glide.keymaps.set(["insert", "normal"], "<C-r>", async () => {
+  if (glide.ctx.mode == "normal") {
+    await glide.keys.send("i");
+  }
+  await glide.keys.send("rlarkdfus");
+});
+
+glide.keymaps.set(["insert", "normal"], "<C-p>", async () => {
+  const accounts = await loadAccounts();
+  glide.commandline.show({
+    title: "Passwords",
+    options: accounts.map((acc) => ({
+      label: acc.label,
+      async execute() {
+        if (glide.ctx.mode == "normal") await glide.keys.send("i");
+        await glide.keys.send(acc.username);
+        await glide.keys.send("<tab>");
+        await glide.keys.send(acc.password);
+        await glide.keys.send("<CR>");
+      },
+    })),
+  })
+}, { description: "Open the passwords picker" })
 
 glide.keymaps.set(["insert", "normal"], "<C-j>", async () => {
   if (urlbar_is_focused()) {
@@ -52,9 +82,16 @@ glide.keymaps.set(["insert", "normal"], "<C-k>", async () => {
 });
 
 for (const [key, domain] of Object.entries(domain_keys)) {
-  glide.keymaps.set("normal", key, async () => {
-    open_tab(domain);
-  });
+  glide.keymaps.set(
+    "normal",
+    key,
+    async () => {
+      open_tab(domain);
+    },
+    {
+      description: domain,
+    },
+  );
 }
 
 for (const domain of ignore_mode_domains) {
@@ -122,16 +159,23 @@ glide.keymaps.set(["normal", "insert"], "<C-b>l", async ({ tab_id }) => {
 
 glide.keymaps.set(
   ["normal", "insert"],
-  "<C-b>%",
+  "<C-b>v",
   async ({ tab_id }) => {
-    const other = await browser.tabs.create({})
-    if (!other) {
-      throw new Error("No next tab");
-    }
-    glide.unstable.split_views.create([tab_id, other]);
+    const all_tabs = await glide.tabs.query({});
+    const other_tabs = all_tabs.filter((t) => t.id !== tab_id);
+
+    glide.commandline.show({
+      title: "Split with tab",
+      options: other_tabs.map((tab) => ({
+        label: tab.title || tab.url || `Tab ${tab.id}`,
+        async execute() {
+          glide.unstable.split_views.create([tab_id, tab.id]);
+        },
+      })),
+    });
   },
   {
-    description: "Create a split view with the tab to the right",
+    description: "Create a split view with a selected tab",
   },
 );
 
@@ -145,3 +189,30 @@ glide.keymaps.set(
     description: "Close the split view for the current tab",
   },
 );
+
+glide.keymaps.set("normal", "<leader>o", async () => {
+  const bookmarks = await browser.bookmarks.getRecent(10);
+
+  glide.commandline.show({
+    title: "bookmarks",
+    options: bookmarks.map((bookmark) => ({
+      label: bookmark.title,
+      async execute() {
+        const tab = await glide.tabs.get_first({
+          url: bookmark.url,
+        });
+        if (tab) {
+          await browser.tabs.update(tab.id, {
+            active: true,
+          });
+        } else {
+          await browser.tabs.create({
+            active: true,
+            url: bookmark.url,
+          });
+        }
+      },
+    })),
+  });
+}, { description: "Open the bookmarks picker" });
+

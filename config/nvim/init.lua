@@ -92,6 +92,7 @@ vim.keymap.set("n", "<Tab>", "bb<c-^><cr>")
 vim.opt.signcolumn = "yes"
 
 vim.keymap.set("n", "<leader>w", ":ToggleWhitespace<CR>", { silent = true })
+vim.keymap.set("n", "<leader>e", ":e!<CR>", { silent = true })
 
 
 -- Function for documentation

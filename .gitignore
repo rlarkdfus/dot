@@ -1,1 +1,4 @@
 *.DS_Store
+config/glide/accounts.json
+config/glide/glide.d.ts
+
