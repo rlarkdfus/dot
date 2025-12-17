@@ -158,7 +158,12 @@ glide.keymaps.set(
   "<C-b>v",
   async ({ tab_id }) => {
     const all_tabs = await glide.tabs.query({});
+    const new_tab = await browser.tabs.create({active: false});
+    if (!all_tabs || !new_tab) {
+      throw new Error("Something");
+    }
     const other_tabs = all_tabs.filter((t) => t.id !== tab_id);
+    other_tabs.unshift(new_tab);
 
     glide.commandline.show({
       title: "Split with tab",
@@ -166,6 +171,9 @@ glide.keymaps.set(
         label: tab.title,
         description: tab.url,
         async execute() {
+          if (tab.id != new_tab.id) {
+              browser.tabs.remove(new_tab.id)
+          }
           glide.unstable.split_views.create([tab_id, tab.id]);
         },
       })),
