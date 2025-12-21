@@ -106,6 +106,23 @@ for (const [key, domain] of Object.entries(domain_keys)) {
   );
 }
 
+glide.autocmds.create("UrlEnter", { hostname: "www.instagram.com" }, async ({ tab_id }) => {
+  await glide.content.execute(() => {
+    const observer = new MutationObserver(() => {
+      document.querySelectorAll("video").forEach((v) => {
+        if (v.videoHeight >= v.videoWidth)
+          v.style.visibility = "hidden";
+      });
+      document.querySelectorAll("img").forEach((i) => {
+        i.style.filter = "blur(32px)";
+      });
+
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  }, { tab_id });
+});
+
 for (const domain of ignore_mode_domains) {
   glide.autocmds.create("UrlEnter", { hostname: domain }, async () => {
     await glide.excmds.execute("mode_change ignore");
