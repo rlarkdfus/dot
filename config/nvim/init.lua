@@ -87,7 +87,9 @@ vim.keymap.set("n", "ge", "<Plug>(coc-references)", { silent = true })
 vim.keymap.set("n", "<space>c", ":<C-u>CocFzfList commands<CR>", { silent = true })
 vim.keymap.set("n", "gR", "*:%s///gc<left><left><left>")
 vim.keymap.set("n", "ff", ":lua ShowDocumentation()<CR>", { silent = true })
-vim.keymap.set("i", "<C-k>", 'coc#refresh()', { expr = true, silent = true })
+vim.keymap.set("i", "<C-j>", 'coc#pum#visible() ? coc#pum#next(1) : "<C-j>"', { expr = true, silent = true })
+vim.keymap.set("i", "<C-k>", 'coc#pum#visible() ? coc#pum#prev(1) : coc#refresh()', { expr = true, silent = true })
+vim.keymap.set("i", "<CR>", 'coc#pum#visible() ? coc#pum#confirm() : "<CR>"', { expr = true, silent = true })
 vim.keymap.set("n", "<Tab>", "bb<c-^><cr>")
 vim.opt.signcolumn = "yes"
 
