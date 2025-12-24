@@ -16,7 +16,7 @@
 //
 // Try typing `glide.` and see what you can do!
 
-const domain_keys = {
+const hostname_keys = {
   "<leader>c": "claude.ai",
   "<leader>C": "canvas.upenn.edu",
   "<leader>y": "youtube.com",
@@ -24,7 +24,7 @@ const domain_keys = {
   "<leader>e": "edstem.org",
 };
 
-const ignore_mode_domains = [
+const ignore_mode_hostnames = [
   "mail.google.com",
   "overleaf.com",
   "docs.google.com",
@@ -93,18 +93,35 @@ glide.keymaps.set(["insert", "normal"], "<C-k>", async () => {
   }
 });
 
-for (const [key, domain] of Object.entries(domain_keys)) {
+for (const [key, hostname] of Object.entries(hostname_keys)) {
   glide.keymaps.set(
     "normal",
     key,
     async () => {
-      open_tab(domain);
+      open_tab(hostname);
     },
     {
-      description: domain,
+      description: hostname,
     },
   );
 }
+
+glide.autocmds.create("WindowLoaded", async () => {
+  const window = await browser.windows.getCurrent();
+  if (window.incognito) {
+    document!.getElementById("nav-bar").style.background = "black";
+  }
+});
+
+glide.autocmds.create("UrlEnter", {hostname: "www.youtube.com"}, async ({ tab_id }) => {
+  const url = glide.ctx.url;
+  const pathname = url.pathname.split("/").filter(Boolean);
+  if (pathname.length > 0) {
+    if (pathname[0] == "shorts") {
+      await browser.tabs.remove([tab_id]);
+    }
+  }
+});
 
 glide.autocmds.create("UrlEnter", { hostname: "www.instagram.com" }, async ({ tab_id }) => {
   await glide.content.execute(() => {
@@ -123,8 +140,8 @@ glide.autocmds.create("UrlEnter", { hostname: "www.instagram.com" }, async ({ ta
   }, { tab_id });
 });
 
-for (const domain of ignore_mode_domains) {
-  glide.autocmds.create("UrlEnter", { hostname: domain }, async () => {
+for (const hostname of ignore_mode_hostnames) {
+  glide.autocmds.create("UrlEnter", { hostname: hostname }, async () => {
     await glide.excmds.execute("mode_change ignore");
     return async () => await glide.excmds.execute("mode_change normal");
   });
@@ -137,19 +154,13 @@ function urlbar_is_focused() {
   );
 }
 
-function findbar_is_focused() {
-  return document!.querySelector("findbar")?.getAttribute("hidden") != null;
-}
-
 glide.keymaps.set("insert", "<Escape>", async () => {
   await glide.excmds.execute("mode_change normal");
   await glide.keys.send("<Escape>", { skip_mappings: true });
-  // if (findbar_is_focused()) {
-  // }
 });
 
-async function open_tab(domain: string) {
-  const url = "https:\/\/" + domain;
+async function open_tab(hostname: string) {
+  const url = "https:\/\/" + hostname;
   const tab = await glide.tabs.get_first({ url: url + "/*" });
   const current_tab = await glide.tabs.active();
   if (tab) {
