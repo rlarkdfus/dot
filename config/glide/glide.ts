@@ -64,8 +64,7 @@ glide.keymaps.set(
       options: accounts.map((acc) => ({
         label: acc.label,
         async execute() {
-          if (glide.ctx.mode == "normal")
-            await glide.excmds.execute("mode_change insert");
+          await glide.excmds.execute("mode_change insert");
           await glide.keys.send(acc.username);
           await glide.keys.send("<tab>");
           await glide.keys.send(acc.password);
