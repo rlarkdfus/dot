@@ -132,7 +132,6 @@ glide.autocmds.create("UrlEnter", { hostname: "www.instagram.com" }, async ({ ta
       document.querySelectorAll("img").forEach((i) => {
         i.style.filter = "blur(32px)";
       });
-
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
@@ -144,6 +143,29 @@ for (const hostname of ignore_mode_hostnames) {
     await glide.excmds.execute("mode_change ignore");
     return async () => await glide.excmds.execute("mode_change normal");
   });
+}
+
+glide.autocmds.create("UrlEnter", {
+  hostname: "github.com",
+}, async () => {
+  glide.buf.keymaps.set(
+    "normal",
+    "gp",
+    github_go_to_pulls,
+  );
+});
+
+
+async function github_go_to_pulls() {
+  const url = glide.ctx.url;
+  const parts = url.pathname.split("/").filter(Boolean);
+  assert(
+    parts.length >= 2,
+    `Path does not look like github.com/$org/$repo`,
+  );
+
+  url.pathname = `/${parts[0]}/${parts[1]}/pulls`;
+  await browser.tabs.update({ url: url.toString() });
 }
 
 function urlbar_is_focused() {
