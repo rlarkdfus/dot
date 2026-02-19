@@ -39,24 +39,8 @@ glide.keymaps.set("ignore", "<C-k>", "tab_prev");
 glide.keymaps.set("normal", "<leader>f", "commandline_show tab ");
 
 glide.keymaps.set(
-  "normal",
-  "<C-c>",
-  async ({ tab_id }) => {
-    browser.tabs.remove(tab_id);
-  },
-  { description: "Close current tab" },
-);
-
-glide.keymaps.set(["insert", "normal"], "<C-r>", async () => {
-  if (glide.ctx.mode == "normal") {
-    await glide.keys.send("i");
-  }
-  await glide.keys.send("rlarkdfus");
-});
-
-glide.keymaps.set(
   ["insert", "normal"],
-  "<C-p>",
+  "<C-r>",
   async () => {
     const accounts = await loadAccounts();
     glide.commandline.show({
@@ -65,8 +49,10 @@ glide.keymaps.set(
         label: acc.label,
         async execute() {
           await glide.excmds.execute("mode_change insert");
-          await glide.keys.send(acc.username);
-          await glide.keys.send("<tab>");
+          if (acc.username) {
+            await glide.keys.send(acc.username);
+            await glide.keys.send("<tab>");
+          }
           await glide.keys.send(acc.password);
           await glide.keys.send("<CR>");
         },
@@ -278,9 +264,10 @@ glide.keymaps.set(
 
 async function loadAccounts() {
   const data = await glide.fs.read("accounts.json", "utf8");
-  return JSON.parse(data) as {
-    label: string;
-    username: string;
-    password: string;
-  }[];
+  const obj = JSON.parse(data) as Record<string, { username: string; password: string }>;
+  return Object.entries(obj).map(([label, { username, password }]) => ({
+    label,
+    username,
+    password,
+  }));
 }
