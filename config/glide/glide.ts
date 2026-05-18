@@ -132,25 +132,21 @@ for (const hostname of ignore_mode_hostnames) {
 }
 
 glide.autocmds.create("UrlEnter", {
-  hostname: "github.com",
-}, async () => {
-  glide.buf.keymaps.set(
-    "normal",
-    "gp",
-    github_go_to_pulls,
-  );
-});
+    hostname: "github.com",
+  }, async () => {
+    glide.buf.keymaps.set("normal", "gp", () => {github_go_to("pulls")});
+    glide.buf.keymaps.set("normal", "gi", () => {github_go_to("issues")});
+    glide.buf.keymaps.set("normal", "gb", () => {github_go_to("branches")});
+    glide.buf.keymaps.set("normal", "gg", () => {github_go_to("")});
+  },
+);
 
-
-async function github_go_to_pulls() {
+async function github_go_to(target: string) {
   const url = glide.ctx.url;
   const parts = url.pathname.split("/").filter(Boolean);
-  assert(
-    parts.length >= 2,
-    `Path does not look like github.com/$org/$repo`,
-  );
+  assert(parts.length >= 2, `Path does not look like github.com/$org/$repo`);
 
-  url.pathname = `/${parts[0]}/${parts[1]}/pulls`;
+  url.pathname = `/${parts[0]}/${parts[1]}/${target}`;
   await browser.tabs.update({ url: url.toString() });
 }
 
